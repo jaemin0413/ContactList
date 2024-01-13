@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 
@@ -59,14 +61,22 @@ class Contact {
     // private로 캡슐화된 변수들의 입력값을 외부로 꺼내기 위해 getter 메서드를 사용했다.
     // builder class에는 클래스의 객체를 생성하는 것으로 목적을 다했기에, setter 메서드와 달리 getter 메서드는 삭제하지 않고 유지했다.
     
+    public static final Comparator<Contact> nameComparator= Comparator.comparing(Contact::getName);
+    public static final Comparator<Contact> groupComparator= Comparator.comparing(Contact::getGroup);
+    // 이름 기준 정렬과 그룹 기준 정렬 두 가지로 정렬하기 위해서 comparable 대신 comparator를 사용했다. 
+
+
+
     @Override
     public String toString() {
         return "Name: " + getName() + System.lineSeparator() +
                "Number: " + getNumber() + System.lineSeparator() +
                "Group: " + getGroup() + System.lineSeparator() ;
 
-    // 오버라이딩을 통해 객체를 출력해도 객체의 주소 대신 이 형식의 문장이 나오게 했다.
+    // String toString 은 객체를 출력할 때 사용한다. 냅다 객체에 println 먹이면 객체의 주소만 뜨는데, 이렇게 오버라이딩 하면 객체를 풀어준다.
     }
+
+
 
 }
 
@@ -98,12 +108,10 @@ public class ContactManagement {
             System.out.println("#######################");
             System.out.println("# 1. 연락처 추가      #");
             System.out.println("# 2. 연락처 검색      #");
-            System.out.println("# 3. 연락처 수정      #");
-            System.out.println("# 4. 연락처 삭제      #");
-            System.out.println("# 5. 연락처 출력      #");
-            System.out.println("# 6. 연락처 정렬      #");
-            System.out.println("# 7. 연락처 그룹 정렬 #");
-            System.out.println("# 8. 프로그램 종료    #");
+            System.out.println("# 3. 연락처 출력      #");
+            System.out.println("# 4. 연락처 정렬      #");
+            System.out.println("# 5. 연락처 그룹 정렬 #");
+            System.out.println("# 6. 프로그램 종료    #");
             System.out.println("#######################");
 
             System.out.println("옵션을 선택해주세요 >> ");
@@ -120,33 +128,25 @@ public class ContactManagement {
                         CM.searchContact();        
                         break;
 
-                case 3 : System.out.println(System.lineSeparator()+ "연락처를 수정합니다.."+System.lineSeparator());   
-                        CM.modifyContact();  
-                        break;
-
-                case 4 : System.out.println(System.lineSeparator()+ "연락처를 삭제합니다."+System.lineSeparator());
-                        CM.deleteContact();
-                        break;
-
-                case 5: System.out.println(System.lineSeparator()+ "연락처를 출력합니다."+System.lineSeparator());
+                case 3 : System.out.println(System.lineSeparator()+ "연락처를 출력합니다."+System.lineSeparator());
                         CM.printContact();
                         break;
 
-                case 6 : System.out.println(System.lineSeparator()+ "연락처를 정렬합니다."+System.lineSeparator());
-                        CM.sortContact();
+                case 4 : System.out.println(System.lineSeparator()+ "연락처를 정렬합니다."+System.lineSeparator());
+                        CM.sortNameContact();
                         break;
 
-                case 7 : System.out.println(System.lineSeparator()+ "연락처를 그룹별로 출력합니다."+System.lineSeparator());
-                        CM.groupContact();
+                case 5: System.out.println(System.lineSeparator()+ "연락처를 그룹별로 출력합니다."+System.lineSeparator());
+                        CM.sortGroupContact();
                         break;
 
-                case 8 : System.out.println(System.lineSeparator()+ "프로그램을 종료합니다."+System.lineSeparator());
+                case 6 : System.out.println(System.lineSeparator()+ "프로그램을 종료합니다."+System.lineSeparator());
                         return;
 
                 default : System.out.println("존재하지 않는 옵션입니다. 다시 선택해주세요.");
 
                 /* 다른 클래스의 메서드를 가져오기 위해서는 해당 클래스 이름.메서드() 의 형태로 호출해야 한다.
-                 * 이 클래스에는 addContact()와 같은 메서드는 없으므로, 어디 클래스에 있는 메서드인지 명시하는 것이 규칙이다.
+                 * ContactManagement 클래스에는 addContact()와 같은 메서드는 없으므로, Contact 클래스에 있는 메서드라고 명시하는 것이 규칙이다.
                 */
             }
         }
@@ -218,10 +218,8 @@ public class ContactManagement {
     }
 
     // ! main 메서드에서 직접 호출하기 위해 static 메서드로 바꿔야 함.
-    // 근데 이렇게 하니 static 메서드라 setter를 통해 private화 된 변수에 접근할 수가 없음. 어떻게 해야 하는지?
+    // 근데 이렇게 하니 static 메서드라 setter를 통해 private화 된 변수에 접근할 수가 없음. 어떻게 해야 하는지? ->> 빌더 패턴
     // this는 인스턴스의 참조를 가리키고 static 메서드는 인스턴스 멤버에 접근할 수 없기에 setter 메서드를 static화 하지는 못 한다. 
-
-    // String toString 은 객체를 출력할 때 사용한다. 냅다 객체에 println 먹이면 객체의 주소만 뜨는데, 이렇게 오버라이딩 하면 객체를 풀어준다.
 
 
     //주소록 검색
@@ -230,7 +228,6 @@ public class ContactManagement {
         System.out.println("찾고자 하는 이름을 검색해주세요");
         Scanner sc = new Scanner(System.in);
         String searchName= sc.nextLine();
-        System.out.println(searchName);
 
         int index=-1;
         
@@ -245,23 +242,76 @@ public class ContactManagement {
             System.out.println("연락처에 존재하지 않는 이름입니다.");
         } else {
             System.out.println(contactList.get(index));
-        }
 
-        //if (contactList.indexOf(searchName) == -1) {
-        //    System.out.println("연락처에 존재하지 않는 이름입니다.");
-        //} else {
-        //    System.out.println(contactList.get(contactList.indexOf(searchName)));
-        //}
+            System.out.println("이 연락처의 수정을 원하신다면 E를, 삭제를 원하신다면 D를 눌러주세요. 또는 아무 키나 눌러 메뉴로 돌아가세요. ");
+            String EorD = sc.nextLine();
+
+            if (EorD.equalsIgnoreCase("E")) {
+                
+                // 연락처 추가 때 사용했던 코드 재사용
+                String name, number, group;
+                boolean invalidname = true;
+                boolean invalidnumber = true;
+            
+                System.out.println("이름: ");
+                name= sc.nextLine();
+                while (invalidname) {
+                    if (name.isBlank() ) {
+                        System.out.println("이름을 다시 입력해 주세요.");
+                        break;
+                        // 이름 중복검사 또한 만들어야 함.
+                
+                    } else {
+                        invalidname=false;
+                    }
+                }
+            
+                System.out.println("전화번호: ");
+                number=sc.nextLine();
+                while (invalidnumber) {
+                    if (number.startsWith("010") && number.length()==11) {
+                        invalidnumber=false;
+                    } else {
+                        System.out.println("전화번호를 다시 입력해 주세요.");
+                        System.out.println("전화번호: ");
+                        number=sc.nextLine();
+                        
+                    }
+                }
+            
+                System.out.println("그룹: ");
+                group=sc.nextLine();
+       
+                contactList.set(index, new Contact.Builder()
+                                .setName(name)
+                                .setNumber(number)
+                                .setGroup(group)
+                                .build());
+                // arrayList.set(index, 요소)는 arrayList의 메서드이다.
+                // builder 패턴으로 새로운 contact 인스턴스를 만든 뒤 기존 인스턴스를 대체해 연락처를 수정했다. 
+
+            } else if (EorD.equalsIgnoreCase("D")) {
+                contactList.remove(index);
+                System.out.println("연락처가 삭제되었습니다");                
+            } else {
+                return;
+            }
+
+
+        }
+        /* 일반적으로 arrayList에 저장된 요소를 찾을 때는 indexof를 사용한다. 
+         * 다만 이 부분에서는 객체에 저장된 변수끼리 비교해야 하는 것이기 때문에, 다른 방식을 적용했다.
+         * 인덱스의 기본값을 -1로 저장 후, for문으로 getName을 호출해 입력한 이름값과 같은지 확인한다. 
+         * 같은 값이 출력되는 경우 인덱스의 값을 i의 값으로 변경하고, 해당 값에 있는 객체를 출력하는 방식을 사용했다.
+         * 
+         * 자바에서 문자열은 객체로 저장되기에, ==를 사용해서 문자열 비교를 하면 문자열의 주소끼리 비교하게 된다.
+         * 따라서 문자열간의 비교를 원한다면 equals()메서드를 사용해야 한다.
+         */
+        
         
 
         }
         
-    
-
-
-    void modifyContact() {}
-
-    void deleteContact() {}
 
     //연락처 출력
     void printContact() {
@@ -270,9 +320,24 @@ public class ContactManagement {
         }
     }
 
-    void sortContact() {}
+    //연락처 이름순 정렬
+    void sortNameContact() {
+        Collections.sort(contactList, Contact.nameComparator);
 
-    void groupContact() {}
+        for (int i=0; i<contactList.size(); i++) {
+            System.out.println(contactList.get(i));
+        }
+    }
+    // collections.sort() 메서드는 첫번째 매개변수로 졍렬할 리스트를, 두 번째 매개변수로 정렬에 사용할 comparator를 받는다.
+
+    //연락처 그룹순 정렬
+    void sortGroupContact() {
+        Collections.sort(contactList, Contact.groupComparator);
+
+        for (int i=0; i<contactList.size(); i++) {
+            System.out.println(contactList.get(i));
+        }
+    }
 
     /* main 클래스에서는 선택한 옵션에 맞게 contactMethod 클래스에 속한 메서드를 호출하려 하고 있다.
      * 다만 다른 클래스에 속한 메서드들은 해당 클래스의 인스턴스 생성 없이는 호출이 불가능하다.
