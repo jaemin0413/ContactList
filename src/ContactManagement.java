@@ -15,7 +15,10 @@ class Contact {
         this.group = builder.group;
     }
     // 참조변수 this 사용
-    // 클래스의 인스턴스 변수와 매개변수가 같을 경우, 둘을 구별하기 위해 인스턴스 변수에 자기 자신을 의미하는 this를 붙인다.
+    // 클래스의 인스턴스 변수와 매개변수가 같을 경우, 둘을 구별하기 위해 인스턴스 변수에 자기 자신을 의미하는 this를 붙인다.'
+    
+    /* 수정자 패턴인 setter 대신 builder 패턴을 사용함. 
+       매개변수가 필요한 객체의 생성이 필요한 상황에서, 더미 데이터나 매개변수가 필요하지 않은  */
 
     static class Builder {
         private String name,group,number;
@@ -169,17 +172,36 @@ public class ContactManagement {
 
     boolean invalidname = true;
     boolean invalidnumber = true;
+    boolean sameName=false;
 
     System.out.println("이름: ");
     name= sc.nextLine();
-    while (invalidname) {
-        if (name.isBlank() ) {
-            System.out.println("이름을 다시 입력해 주세요.");
-            break;
-            // 이름 중복검사 또한 만들어야 함.
+
     
-        } else {
+
+    while (invalidname) {
+
+        for (int i=0; i<contactList.size(); i++) {
+            if (contactList.get(i).getName().equals(name)) {
+                sameName=true;
+                break;
+            } 
+        } // 이름 중복 검사
+
+        if (name.isBlank() ) {
+            System.out.println("공백을 입력할 수는 없습니다. 다시 입력해주세요.");
+            System.out.println("이름: ");
+            name= sc.nextLine();
+    
+        } else if (sameName) {
+            System.out.println("중복된 이름입니다. 다시 입력해주세요.");
+            System.out.println("이름: ");
+            name= sc.nextLine();
+            sameName=false;
+
+        }else {
             invalidname=false;
+            sameName=false;
         }
     }
     /* 먼저 scanner를 통해 입력받은 값을 name 변수에 임시로 저장하고, ~~~~~
@@ -215,6 +237,7 @@ public class ContactManagement {
     contactList.add(contact);
     System.out.println(contact);
 
+    sc.close();
     }
 
     // ! main 메서드에서 직접 호출하기 위해 static 메서드로 바꿔야 함.
@@ -297,7 +320,7 @@ public class ContactManagement {
                 return;
             }
 
-
+        sc.close();
         }
         /* 일반적으로 arrayList에 저장된 요소를 찾을 때는 indexof를 사용한다. 
          * 다만 이 부분에서는 객체에 저장된 변수끼리 비교해야 하는 것이기 때문에, 다른 방식을 적용했다.
